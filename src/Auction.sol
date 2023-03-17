@@ -106,6 +106,8 @@ contract Auction is Ownable{
         (bool success, ) = msg.sender.call{value: amount}("");
             require(success, "update failed failed.");
         item.bidders[msg.sender] += amount;
+
+        _updated = true;
     }
 
     function withdraw(uint256 _auctionid) public {
