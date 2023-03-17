@@ -22,7 +22,6 @@ contract Auction is Ownable{
         address highestbidder;
         uint256 startingPrice;
         mapping(address => uint256) bidders;
-        mapping(uint256 => address) getbidders;
     }
     mapping(uint256 => AuctionItem) public auctionItems;
 
@@ -95,7 +94,11 @@ contract Auction is Ownable{
 
         item.bidders[msg.sender] = msg.value;
         item.Bids.push(msg.value);
-        item.getbidders[msg.value] = msg.sender;
+        // item.getbidders[msg.value] = msg.sender;
+        if(msg.value>item.highestBid){
+            item.highestBid = msg.value;
+            item.highestbidder = msg.sender;
+        }
         
     }
 
@@ -133,12 +136,12 @@ contract Auction is Ownable{
         require(item.auctionStarted, "Auction not in progress");
 
         address bidders;
-        for (uint i = 0; i < item.Bids.length; i++) {
-            if (item.Bids[i] > item.highestBid) {
-                item.highestBid = item.Bids[i];
-                item.highestbidder = item.getbidders[item.highestBid];
-            }
-        }
+        // for (uint i = 0; i < item.Bids.length; i++) {
+        //     if (item.Bids[i] > item.highestBid) {
+        //         item.highestBid = item.Bids[i];
+        //         item.highestbidder = item.getbidders[item.highestBid];
+        //     }
+        // }
 
 
 
