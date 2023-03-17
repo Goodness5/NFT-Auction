@@ -7,7 +7,7 @@ contract Auction is Ownable{
     address[] public admins;
     uint256 public auctionId;
     mapping(address => uint) public bids;
-    address owner;
+    // address owner;
 
     struct AuctionItem {
         string name;
@@ -35,7 +35,6 @@ contract Auction is Ownable{
 
     constructor() {
         admins.push(msg.sender);
-        owner = msg.sender;
     }
 
     function addAdmin(address _admin) public onlyAdmin {
