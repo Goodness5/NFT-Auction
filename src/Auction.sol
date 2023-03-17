@@ -17,8 +17,10 @@ contract Auction is Ownable{
         uint256 duration;
         bool auctionStarted;
         uint256 highestBid;
-        address highestBidder;
+        uint256[] Bids;
+        address highestbidder;
         uint256 startingPrice;
+        mapping(address => uint256) bidders;
     }
     mapping(uint256 => AuctionItem) public auctionItems;
 
@@ -69,61 +71,69 @@ contract Auction is Ownable{
         require(_duration > block.timestamp, "invalid time");
         newItem.auctionStarted = true;
         newItem.highestBid = 0;
-        newItem.highestBidder = address(0);
         newItem.startingPrice = _startingprice;
         IERC721(newItem.nftAddress).safeTransferFrom(_nftOwner, address(this), newItem.nftId);
 
         if (block.timestamp == _duration) {
             endAuction(newItem.nftId);
         }
+        newItem.bidders[_nftOwner] = _startingprice;
+
     }
 
     function placeBid(uint256 _auctionId) public payable {
         AuctionItem storage item = auctionItems[_auctionId];
         require(item.auctionStarted, "auction not started");
-        require(
-            msg.value > item.highestBid,
-            "Your bid must be higher than the current highest bid."
-        );
+        
         require(msg.value > item.startingPrice);
 
-        if (item.highestBidder != address(0)) {
-            bids[item.highestBidder] += item.highestBid;
-        }
-
-        item.highestBid = msg.value;
-        item.highestBidder = msg.sender;
+        item.bidders[msg.sender] = msg.value;
+        item.Bids.push(msg.value);
     }
 
-    function withdraw() public {
-        require(bids[msg.sender] > 0, "You don't have a bid.");
+    function withdraw(uint256 _auctionid) public {
+        AuctionItem storage aunction = auctionItems[_auctionid];
+        require(aunction.bidders[msg.sender] > 0, "You don't have a bid.");
 
-        uint amount = (bids[msg.sender] * 9) / 10;
-        bids[msg.sender] = 0;
+        uint amount = (aunction.bidders[msg.sender] * 9) / 10;
 
-        if (!payable(msg.sender).send(amount)) {
-            bids[msg.sender] = amount;
+        if (msg.sender != address(0)) {
+        (bool success, ) = msg.sender.call{value: amount}("");
+            require(success, "Transfer failed.");
+            aunction.bidders[msg.sender] = 0;   
         }
+        else{
+            revert("invalid caller");
+        }
+}
+
+   function endAuction(uint256 _auctionId) public onlyAdmin {
+    AuctionItem storage item = auctionItems[_auctionId];
+    require(item.auctionStarted, "Auction not in progress");
+
+    address bidders;
+        for (uint i = 0; i < item.Bids.length; i++) {
+        if (item.Bids[i] > highestBid) {
+            highestBid = item.Bids[i];
+            highestbidder = bidders[highestbid];
     }
 
-    function endAuction(uint256 _auctionId) public onlyAdmin {
-        AuctionItem storage item = auctionItems[_auctionId];
-        require(item.auctionStarted, "Auction not in progress");
+}
 
-        item.auctionStarted = false;
-        if (item.highestBidder == address(0)) {
-            item.nftAddress.safeTransferFrom(address(this), _owner, item.nftId);
-        }
-        item.nftAddress.safeTransferFrom(
-            address(this),
-            item.highestBidder,
-            item.nftId
-        );
+}
 
-        // if (item.highestBidder != address(0)) {
-        //     payable(owner).transfer(item.highestBid);
-        // }
+
+    item.auctionStarted = false;
+    if (bidders == address(0)) {
+        item.nftAddress.safeTransferFrom(address(this), _owner, item.nftId);
     }
+    item.nftAddress.safeTransferFrom(address(this), bidders, item.nftId);
+
+    if (highestBid > 0) {
+        payable(owner()).transfer(highestBid);
+    }
+}
+
 
     function withdrawNft(uint256 _auctionId, address _to) public onlyAdmin {
         AuctionItem storage item = auctionItems[_auctionId];
