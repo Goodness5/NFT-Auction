@@ -126,4 +126,12 @@ contract Auction is Ownable{
         );
         item.nftAddress.safeTransferFrom(address(this), _to, item.nftId);
     }
+
+    receive() payable external {
+
+    }
+
+    fallback() external payable{
+        
+    }
 }
