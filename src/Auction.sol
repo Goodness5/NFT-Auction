@@ -79,6 +79,9 @@ contract Auction is Ownable{
             endAuction(newItem.nftId);
         }
         newItem.bidders[_nftOwner] = _startingprice;
+        if (newItem.duration== block.timestamp) {
+            endAuction(_nftId);
+        }
 
     }
 
@@ -90,6 +93,8 @@ contract Auction is Ownable{
 
         item.bidders[msg.sender] = msg.value;
         item.Bids.push(msg.value);
+        item.getbidders[msg.value] = msg.sender;
+        
     }
 
     function withdraw(uint256 _auctionid) public {

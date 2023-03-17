@@ -17,11 +17,10 @@ contract AuctionTest is Test {
     }
 
     function test_addAdmin() public {
-        address admin = auction.admins;
-        uint admincounts = admin.length;
+        uint admincounts = auction.admins.length;
         auction.addAdmin(address(0x1234567890123456789012345678901234567890));
         uint newAdminCount = auction.admins.length;
-        assertTrue(newAdminCount == admincount + 1);
+        assertTrue(newAdminCount == newAdminCount + 1);
     }
 
     function test_removeAdmin() public {
