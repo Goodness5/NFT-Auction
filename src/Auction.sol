@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 import "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract Auction is Ownable{
+
     address[] public admins;
     uint256 public auctionId;
     mapping(address => uint) public bids;
@@ -29,7 +30,7 @@ contract Auction is Ownable{
                 break;
             }
         }
-        require(isAdmin, "Only admins can perform this operation.");
+        require(isAdmin, "Only admins");
         _;
     }
 
@@ -56,7 +57,8 @@ contract Auction is Ownable{
         IERC721 _nftAddress,
         uint256 _nftId,
         uint256 _duration,
-        uint256 _startingprice
+        uint256 _startingprice,
+        address _nftOwner
     ) public onlyAdmin {
         auctionId += 1;
         AuctionItem storage newItem = auctionItems[auctionId];
@@ -68,6 +70,7 @@ contract Auction is Ownable{
         newItem.highestBid = 0;
         newItem.highestBidder = address(0);
         newItem.startingPrice = _startingprice;
+        IERC721(newItem.nftAddress).safeTransferFrom(_nftOwner, address(this), newItem.nftId);
     }
 
     function placeBid(uint256 _auctionId) public payable {
