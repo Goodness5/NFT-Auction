@@ -95,7 +95,7 @@ contract Auction is Ownable{
         item.bidders[msg.sender] = msg.value;
         item.Bids.push(msg.value);
         // item.getbidders[msg.value] = msg.sender;
-        if(msg.value>item.highestBid){
+        if(msg.sender != address(0) && msg.value>item.highestBid){
             item.highestBid = msg.value;
             item.highestbidder = msg.sender;
         }
