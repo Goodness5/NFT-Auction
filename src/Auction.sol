@@ -66,11 +66,16 @@ contract Auction is Ownable{
         newItem.nftAddress = _nftAddress;
         newItem.nftId = _nftId;
         newItem.duration = _duration;
+        require(_duration > block.timestamp, "invalid time");
         newItem.auctionStarted = true;
         newItem.highestBid = 0;
         newItem.highestBidder = address(0);
         newItem.startingPrice = _startingprice;
         IERC721(newItem.nftAddress).safeTransferFrom(_nftOwner, address(this), newItem.nftId);
+
+        if (block.timestamp == _duration) {
+            endAuction(newItem.nftId);
+        }
     }
 
     function placeBid(uint256 _auctionId) public payable {
