@@ -21,6 +21,7 @@ contract Auction is Ownable{
         address highestbidder;
         uint256 startingPrice;
         mapping(address => uint256) bidders;
+        mapping(uint256 => address) getbidders;
     }
     mapping(uint256 => AuctionItem) public auctionItems;
 
@@ -108,29 +109,27 @@ contract Auction is Ownable{
 }
 
    function endAuction(uint256 _auctionId) public onlyAdmin {
-    AuctionItem storage item = auctionItems[_auctionId];
-    require(item.auctionStarted, "Auction not in progress");
+        AuctionItem storage item = auctionItems[_auctionId];
+        require(item.auctionStarted, "Auction not in progress");
 
-    address bidders;
+        address bidders;
         for (uint i = 0; i < item.Bids.length; i++) {
-        if (item.Bids[i] > highestBid) {
-            highestBid = item.Bids[i];
-            highestbidder = bidders[highestbid];
-    }
+            if (item.Bids[i] > item.highestBid) {
+                item.highestBid = item.Bids[i];
+                item.highestbidder = item.getbidders[item.highestBid];
+            }
+        }
 
-}
-
-}
 
 
     item.auctionStarted = false;
     if (bidders == address(0)) {
         item.nftAddress.safeTransferFrom(address(this), _owner, item.nftId);
     }
-    item.nftAddress.safeTransferFrom(address(this), bidders, item.nftId);
 
-    if (highestBid > 0) {
-        payable(owner()).transfer(highestBid);
+    else{
+    item.nftAddress.safeTransferFrom(address(this), bidders, item.nftId);
+        payable(owner()).transfer(item.highestBid);
     }
 }
 
