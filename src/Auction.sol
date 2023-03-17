@@ -7,7 +7,7 @@ contract Auction is Ownable{
     address[] public admins;
     uint256 public auctionId;
     mapping(address => uint) public bids;
-    // address owner;
+    address _owner;
 
     struct AuctionItem {
         string name;
@@ -35,6 +35,7 @@ contract Auction is Ownable{
 
     constructor() {
         admins.push(msg.sender);
+        _owner=msg.sender;
     }
 
     function addAdmin(address _admin) public onlyAdmin {
@@ -103,7 +104,7 @@ contract Auction is Ownable{
 
         item.auctionStarted = false;
         if (item.highestBidder == address(0)) {
-            item.nftAddress.safeTransferFrom(address(this), owner, item.nftId);
+            item.nftAddress.safeTransferFrom(address(this), _owner, item.nftId);
         }
         item.nftAddress.safeTransferFrom(
             address(this),
