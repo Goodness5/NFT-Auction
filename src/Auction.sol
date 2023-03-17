@@ -97,6 +97,17 @@ contract Auction is Ownable{
         
     }
 
+    function updateBid(uint256 _auctionId) public payable returns  (bool _updated) {
+        AuctionItem storage item = auctionItems[_auctionId];
+        require(msg.sender != address(0));
+        require(item.bidders[msg.sender] != 0, "you don't have a bid");
+        require(item.auctionStarted, "this auction is not in progress");
+        uint amount = msg.value;
+        (bool success, ) = msg.sender.call{value: amount}("");
+            require(success, "update failed failed.");
+        item.bidders[msg.sender] += amount;
+    }
+
     function withdraw(uint256 _auctionid) public {
         AuctionItem storage aunction = auctionItems[_auctionid];
         require(aunction.bidders[msg.sender] > 0, "You don't have a bid.");
