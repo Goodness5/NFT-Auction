@@ -6,7 +6,7 @@ import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 contract Auction is Ownable{
 
     address[] public admins;
-    uint256 public auctionId;
+    uint256 auctionId = 1;
     mapping(address => uint) public bids;
     address _owner;
 
@@ -14,6 +14,7 @@ contract Auction is Ownable{
         string name;
         IERC721 nftAddress;
         uint256 nftId;
+        address Creator;
         uint256 duration;
         bool auctionStarted;
         uint256 highestBid;
@@ -63,11 +64,11 @@ contract Auction is Ownable{
         uint256 _startingprice,
         address _nftOwner
     ) public onlyAdmin {
-        auctionId += 1;
         AuctionItem storage newItem = auctionItems[auctionId];
         newItem.name = _itemName;
         newItem.nftAddress = _nftAddress;
         newItem.nftId = _nftId;
+        newItem.Creator = msg.sender;
         newItem.duration = _duration;
         require(_duration > block.timestamp, "invalid time");
         newItem.auctionStarted = true;
@@ -82,6 +83,7 @@ contract Auction is Ownable{
         if (newItem.duration== block.timestamp) {
             endAuction(_nftId);
         }
+        auctionId += 1;
 
     }
 
