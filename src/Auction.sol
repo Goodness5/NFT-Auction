@@ -6,7 +6,7 @@ import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 contract Auction is Ownable{
 
     address[] public admins;
-    uint256 auctionId = 1;
+    uint256 public auctionId = 1;
     mapping(address => uint) public bids;
     address _owner;
 
@@ -99,6 +99,8 @@ contract Auction is Ownable{
             item.highestBid = msg.value;
             item.highestbidder = msg.sender;
         }
+        //    (bool success, ) = msg.sender.call{value: msg.value}("");
+        //     require(success, "failed to pay price");
         
     }
 
@@ -108,8 +110,8 @@ contract Auction is Ownable{
         require(item.bidders[msg.sender] != 0, "you don't have a bid");
         require(item.auctionStarted, "this auction is not in progress");
         uint amount = msg.value;
-        (bool success, ) = msg.sender.call{value: amount}("");
-            require(success, "update failed failed.");
+        // (bool success, ) = msg.sender.call{value: amount}("");
+        //     require(success, "update failed failed.");
         item.bidders[msg.sender] += amount;
 
         _updated = true;
