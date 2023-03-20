@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 import "../lib/forge-std/src/Test.sol";
-// import "../lib/openzeppelin-contracts/contacts/token/ERC721/IERC721.sol";
+import "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import "../src/Auction.sol";
 import "../Mock/NFT.sol";
 
@@ -12,27 +12,27 @@ contract AuctionTest is Test {
     address tester1 = mkaddr("tester1");
     address bid = mkaddr("bider");
 
-
     function setUp() public {
         auction = new Auction();
-        auction = new Auction();
-        vm.prank(tester1);
-        nft = new NFT();
         auction.addAdmin(tester1);
+        // auction = new Auction(); 
+        vm.startPrank(tester1);
+        nft = new NFT();
         nft.approve(address(auction), 1);
         // nft.transferFrom(address(this), address(auction), 1);
     }
 
-     function testCreate() public {
-        vm.startPrank(tester1);
-        nft.approve(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 1);
-        auction.startAuction("test", IERC721(nft), 1, 765762, 1, tester1);
+    function testCreate() public {
+        // vm.startPrank(tester1);
+        // nft.approve(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 1);
+        auction.startAuction("test", tester1, 1, 765762, 1, IERC721(nft));
         vm.stopPrank();
         vm.deal(bid, 10 ether);
         vm.prank(bid);
         auction.placeBid{value: 0.3 ether}(1);
     }
-      function mkaddr(string memory name) public returns (address) {
+
+    function mkaddr(string memory name) public returns (address) {
         address addr = address(
             uint160(uint256(keccak256(abi.encodePacked(name))))
         );
@@ -56,7 +56,10 @@ contract AuctionTest is Test {
     // }
 
     function test_startAuction() public {
+        // vm.startPrank(tester1);
+
         uint initialAuctionCount = auction.auctionId();
+        nft.approve(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 1);
         auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
         uint newAuctionCount = auction.auctionId();
         assertTrue(newAuctionCount == initialAuctionCount + 1);

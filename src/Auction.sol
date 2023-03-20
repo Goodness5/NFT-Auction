@@ -12,7 +12,7 @@ contract Auction is Ownable{
 
     struct AuctionItem {
         string name;
-        IERC721 nftAddress;
+        address nftAddress;
         uint256 nftId;
         address Creator;
         uint256 duration;
@@ -57,7 +57,7 @@ contract Auction is Ownable{
 
     function startAuction(
         string memory _itemName,
-        IERC721 _nftAddress,
+        address _nftAddress,
         uint256 _nftId,
         uint256 _duration,
         uint256 _startingprice,
@@ -146,14 +146,16 @@ contract Auction is Ownable{
         // }
 
 
+        item.nftAddress;
 
+       IERC721 price = IERC721(item.nftAddress);
     item.auctionStarted = false;
     if (bidders == address(0)) {
-        item.nftAddress.safeTransferFrom(address(this), _owner, item.nftId);
+        price.safeTransferFrom(address(this), _owner, item.nftId);
     }
 
     else{
-    item.nftAddress.safeTransferFrom(address(this), bidders, item.nftId);
+    price.safeTransferFrom(address(this), bidders, item.nftId);
         payable(owner()).transfer(item.highestBid);
     }
 }
@@ -161,12 +163,14 @@ contract Auction is Ownable{
 
     function withdrawNft(uint256 _auctionId, address _to) public onlyAdmin {
         AuctionItem storage item = auctionItems[_auctionId];
+
+       IERC721 price = IERC721(item.nftAddress);
         require(!item.auctionStarted, "Auction is still ongoing.");
         require(
-            item.nftAddress.ownerOf(item.nftId) == address(this),
+            price.ownerOf(item.nftId) == address(this),
             "nft not present"
         );
-        item.nftAddress.safeTransferFrom(address(this), _to, item.nftId);
+        price.safeTransferFrom(address(this), _to, item.nftId);
     }
 
     receive() payable external {
