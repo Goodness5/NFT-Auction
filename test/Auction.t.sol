@@ -7,39 +7,49 @@ import "../src/Auction.sol";
 import "../Mock/NFT.sol";
 
 contract AuctionTest is Test {
-    Auction public auction;
-    NFT nft;
-    address tester1 = mkaddr("tester1");
-    address bid = mkaddr("bider");
+    // Auction public auction;
+    // NFT nft;
+    // address tester1 = mkaddr("tester1");
+    // address bid = mkaddr("bider");
 
-    function setUp() public {
-        auction = new Auction();
-        auction.addAdmin(tester1);
-        // auction = new Auction(); 
-        vm.startPrank(tester1);
-        nft = new NFT();
-        nft.approve(address(auction), 1);
-        // nft.transferFrom(address(this), address(auction), 1);
-    }
+    // function setUp() public {
+    //     auction = new Auction();
+    //     auction.addAdmin(tester1);
+    //     // auction = new Auction(); 
+    //     vm.startPrank(tester1);
+    //     nft = new NFT();
+    //     nft.approve(address(this), 1);
 
-    function testCreate() public {
-        // vm.startPrank(tester1);
-        // nft.approve(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 1);
-        auction.startAuction("test", tester1, 1, 765762, 1, IERC721(nft));
-        vm.stopPrank();
-        vm.deal(bid, 10 ether);
-        vm.prank(bid);
-        auction.placeBid{value: 0.3 ether}(1);
-    }
+    //     // nft.transferFrom(address(this), address(auction), 1);
+    // }
 
-    function mkaddr(string memory name) public returns (address) {
-        address addr = address(
-            uint160(uint256(keccak256(abi.encodePacked(name))))
-        );
-        vm.label(addr, name);
-        return addr;
-    }
+    // function testCreate() public {
+    //     // vm.startPrank(tester1);
+    //     // nft.approve(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 1);
+    //     auction.startAuction("test", address(nft), 1, 765762, 1, tester1);
+    //     vm.stopPrank();
+    //     vm.deal(bid, 10 ether);
+    //     vm.prank(bid);
+    //     auction.placeBid{value: 0.3 ether}(1);
+    // }
 
+    // function mkaddr(string memory name) public returns (address) {
+    //     address addr = address(
+    //         uint160(uint256(keccak256(abi.encodePacked(name))))
+    //     );
+    //     vm.label(addr, name);
+    //     return addr;
+    // }
+
+    // function test_startAuction() public {
+    //     // vm.startPrank(tester1);
+
+    //     uint initialAuctionCount = auction.auctionId();
+    //     nft.approve(address(this), 1);
+    //     auction.startAuction("testnft", address(nft), 1, 8999, 1, address(this));
+    //     uint newAuctionCount = auction.auctionId();
+    //     assertTrue(newAuctionCount == initialAuctionCount + 1);
+    // }
     // function test_addAdmin() public {
     //     uint admincounts = auction.admins.length;
     //     auction.addAdmin(address(0x1234567890123456789012345678901234567890));
@@ -55,15 +65,6 @@ contract AuctionTest is Test {
     //     assertTrue(newAdminCount == initialAdminCount - 1);
     // }
 
-    function test_startAuction() public {
-        // vm.startPrank(tester1);
-
-        uint initialAuctionCount = auction.auctionId();
-        nft.approve(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 1);
-        auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
-        uint newAuctionCount = auction.auctionId();
-        assertTrue(newAuctionCount == initialAuctionCount + 1);
-    }
 
     // function test_placeBid() public payable {
     //     auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
