@@ -7,39 +7,35 @@ import "../src/Auction.sol";
 import "../Mock/NFT.sol";
 
 contract AuctionTest is Test {
-    // Auction public auction;
-    // NFT nft;
-    // address tester1 = mkaddr("tester1");
-    // address bid = mkaddr("bider");
+    Auction public auction;
+    NFT nft;
+    address tester1 = mkaddr("tester1");
+    address bid = mkaddr("bider");
 
-    // function setUp() public {
-    //     auction = new Auction();
-    //     auction.addAdmin(tester1);
-    //     // auction = new Auction(); 
-    //     vm.startPrank(tester1);
-    //     nft = new NFT();
-    //     nft.approve(address(this), 1);
+    function setUp() public {
+        vm.startPrank(tester1);
+        auction = new Auction();
+        auction.addAdmin(tester1);
+        nft = new NFT();
+        vm.stopPrank();
+        console.log(nft.balanceOf(tester1));
+    }
 
-    //     // nft.transferFrom(address(this), address(auction), 1);
-    // }
+    function testCreate() public {
+        vm.startPrank(tester1);
+        nft.approve(address(auction), 1);
+        auction.startAuction("test", address(nft), 1, 765762, 1, tester1);
+        vm.stopPrank();
+        
+    }
 
-    // function testCreate() public {
-    //     // vm.startPrank(tester1);
-    //     // nft.approve(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 1);
-    //     auction.startAuction("test", address(nft), 1, 765762, 1, tester1);
-    //     vm.stopPrank();
-    //     vm.deal(bid, 10 ether);
-    //     vm.prank(bid);
-    //     auction.placeBid{value: 0.3 ether}(1);
-    // }
-
-    // function mkaddr(string memory name) public returns (address) {
-    //     address addr = address(
-    //         uint160(uint256(keccak256(abi.encodePacked(name))))
-    //     );
-    //     vm.label(addr, name);
-    //     return addr;
-    // }
+    function mkaddr(string memory name) public returns (address) {
+        address addr = address(
+            uint160(uint256(keccak256(abi.encodePacked(name))))
+        );
+        vm.label(addr, name);
+        return addr;
+    }
 
     // function test_startAuction() public {
     //     // vm.startPrank(tester1);
@@ -66,22 +62,31 @@ contract AuctionTest is Test {
     // }
 
 
-    // function test_placeBid() public payable {
-    //     auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
-    //     uint initialBid = auction.bids(address(this));
-    //     auction.placeBid{value: 1000}(1);
-    //     uint newBid = auction.bids(address(this));
-    //     assertTrue(newBid == initialBid + 1000);
-    // }
+    function test_placeBid() public payable {
+        vm.startPrank(tester1);
+         nft.approve(address(auction), 1);
+        auction.startAuction("testnft", address(nft), 1, 8999, 1, tester1);
+        vm.stopPrank();
+         vm.startPrank(bid);
+        vm.deal(bid, 100000 ether);
+        auction.placeBid{value: 1000}(1);
+        uint newBid = auction.bids(address(this));
+         vm.stopPrank();
+    }
 
-    // function test_withdraw() public payable {
-    //     auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
-    //     auction.placeBid{value: 1000}(1);
-    //     uint initialBalance = address(this).balance;
-    //     auction.withdraw(1);
-    //     uint newBalance = address(this).balance;
-    //     assertTrue(newBalance == initialBalance + 900);
-    // }
+    function test_withdraw() public payable {
+        vm.startPrank(tester1);
+        nft.approve(address(auction), 1);
+        auction.startAuction("testnft", address(nft), 1, 8999, 1, tester1);
+        vm.stopPrank();
+         vm.startPrank(bid);
+        vm.deal(bid, 100000 ether);
+        auction.placeBid{value: 1000}(1);
+        // uint initialBalance = auction.bidders[bid];
+        auction.withdraw(1);
+        uint newBalance = address(this).balance;
+        // assertTrue(newBalance == initialBalance + 900);
+    }
 
     // function test_endAuction() public {
     //     auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
@@ -99,4 +104,6 @@ contract AuctionTest is Test {
     //     auction.withdrawNft(1, address(this));
     //     assertTrue(nft.ownerOf(1) == address(this));
     // }
+
+    // test all functions in auction.sol
 }

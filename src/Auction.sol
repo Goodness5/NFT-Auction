@@ -72,7 +72,7 @@ contract Auction is Ownable {
         newItem.auctionStarted = true;
         newItem.highestBid = 0;
         newItem.startingPrice = _startingprice;
-        IERC721(newItem.nftAddress).safeTransferFrom(
+        IERC721(newItem.nftAddress).transferFrom(
             _nftOwner,
             address(this),
             newItem.nftId
