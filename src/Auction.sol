@@ -125,18 +125,33 @@ contract Auction is Ownable {
     }
 
     function withdraw(uint256 _auctionid) public {
-        AuctionItem storage aunction = auctionItems[_auctionid];
-        require(aunction.bidders[msg.sender] > 0, "You don't have a bid.");
-
-        uint amount = (aunction.bidders[msg.sender] * 9) / 10;
-
-        if (msg.sender != address(0)) {
-            (bool success, ) = msg.sender.call{value: amount}("");
-            require(success, "Transfer failed.");
-            aunction.bidders[msg.sender] = 0;
-        } else {
-            revert("invalid caller");
+        AuctionItem storage auction = auctionItems[_auctionid];
+        require(auction.bidders[msg.sender] > 0, "You don't have a bid.");
+        
+        
+        if(auction.auctionStarted){
+            uint amount = (auction.bidders[msg.sender]);
+            if (msg.sender != address(0)) {
+                (bool success, ) = msg.sender.call{value: amount}("");
+                require(success, "Transfer failed.");
+                auction.bidders[msg.sender] = 0;
+            } else {
+                revert("invalid caller");
+            }
+            
         }
+        else{
+            uint amount = (auction.bidders[msg.sender] * 8) / 10;
+             if (msg.sender != address(0)) {
+                (bool success, ) = msg.sender.call{value: amount}("");
+                require(success, "Transfer failed.");
+                auction.bidders[msg.sender] = 0;
+            } else {
+                revert("invalid caller");
+            }
+        }
+
+
     }
 
     function endAuction(uint256 _auctionId) public onlyAdmin {
