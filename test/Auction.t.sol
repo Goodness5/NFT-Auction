@@ -86,17 +86,17 @@ contract AuctionTest is Test {
         auction.withdraw(1);
         uint newBalance = address(this).balance;
         // assertTrue(newBalance == initialBalance + 900);
+        vm.stopPrank();
     }
 
-    // function test_endAuction() public {
-    //     auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
-    //     auction.placeBid{value: 1000}(1);
-    //     address initialNftOwner = nft.ownerOf(1);
-    //     auction.endAuction(1);
-    //     address newNftOwner = nft.ownerOf(1);
-    //     assertTrue(newNftOwner == address(this));
-    //     assertTrue(auction.bids(address(this)) == 0);
-    // }
+    function test_endAuction() public {
+        testCreate();
+        test_placeBid();
+        vm.startPrank(tester1);
+        auction.endAuction(1);
+        console.log(auction.AuctionItems[1].highestbidder)
+        
+    }
 
     // function test_withdrawNft() public {
     //     auction.startAuction("testnft", nft, 1, 8999, 1, address(this));
