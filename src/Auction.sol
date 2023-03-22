@@ -169,6 +169,7 @@ contract Auction is Ownable {
             price.safeTransferFrom(address(this), item.highestbidder, item.nftId);
             payable(owner()).transfer(item.highestBid);
         }
+        getwinner(_auctionId);
     }
 
     function withdrawNft(uint256 _auctionId, address _to) public onlyAdmin {
