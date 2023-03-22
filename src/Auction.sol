@@ -158,22 +158,15 @@ contract Auction is Ownable {
         AuctionItem storage item = auctionItems[_auctionId];
         require(item.auctionStarted, "Auction not in progress");
 
-        address bidders;
-        // for (uint i = 0; i < item.Bids.length; i++) {
-        //     if (item.Bids[i] > item.highestBid) {
-        //         item.highestBid = item.Bids[i];
-        //         item.highestbidder = item.getbidders[item.highestBid];
-        //     }
-        // }
 
         item.nftAddress;
 
         IERC721 price = IERC721(item.nftAddress);
         item.auctionStarted = false;
-        if (bidders == address(0)) {
+        if (item.highestbidder == address(0)) {
             price.safeTransferFrom(address(this), _owner, item.nftId);
         } else {
-            price.safeTransferFrom(address(this), bidders, item.nftId);
+            price.safeTransferFrom(address(this), item.highestbidder, item.nftId);
             payable(owner()).transfer(item.highestBid);
         }
     }
@@ -185,6 +178,13 @@ contract Auction is Ownable {
         require(!item.auctionStarted, "Auction is still ongoing.");
         require(price.ownerOf(item.nftId) == address(this), "nft not present");
         price.safeTransferFrom(address(this), _to, item.nftId);
+    }
+
+    function getwinner(uint256 _id) view internal returns(address _winneraddress, uint256 _winnerbid){
+            AuctionItem storage auction = auctionItems[_id];
+
+            _winneraddress = auction.highestbidder;
+            _winnerbid = auction.highestBid;
     }
 
     receive() external payable {}
